@@ -3,7 +3,6 @@
 // @namespace    http://tampermonkey.net/
 // @version      2025-12-24
 // @description  Copy task name, add customfield to main jira task front
-// @match        https://jira.proitr.ru/browse/*
 // @author       Vjattich
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mozilla.org
 // @grant        GM_setClipboard
