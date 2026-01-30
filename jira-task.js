@@ -7,10 +7,11 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mozilla.org
 // @grant        GM_setClipboard
 // ==/UserScript==
-(function() {
+(function () {
     'use strict';
 
-    const BUTTON_ID = 'tm-jira-copy-btn';
+    const BUTTON_ID = 'tm-jira-copy-btn',
+          BUTTON_LINK_ID = 'tm-jira-copy-link-btn';
 
     function addCopyButton() {
 
@@ -40,7 +41,6 @@
 
             // Click Event
             btn.onclick = (e) => {
-            console.log('asd')
 
                 e.preventDefault();
                 e.stopPropagation();
@@ -61,8 +61,59 @@
 
 
             key.parentNode.insertBefore(btn, key.nextSibling);
-        }}
+        }
+    }
 
+    function addCopyLinkButton() {
+
+        if (document.getElementById(BUTTON_LINK_ID)) return;
+
+        const key = document.querySelector('#key-val'),
+              link = window.location.href;
+
+        if (key.innerText) {
+
+            const btn = document.createElement('button');
+            btn.id = BUTTON_LINK_ID;
+            btn.innerText = 'Copy Link';
+            btn.title = `Copy link: ${link}`;
+
+            Object.assign(btn.style, {
+                marginLeft: '15px',
+                padding: '4px 10px',
+                fontSize: '14px',
+                borderRadius: '3px',
+                border: 'none',
+                backgroundColor: '#0052cc',
+                color: 'white',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                verticalAlign: 'middle'
+            });
+
+            // Click Event
+            btn.onclick = (e) => {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                const textToCopy = `${link}`;
+
+                GM_setClipboard(textToCopy, 'text');
+
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.backgroundColor = '#36b37e'; // Green
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '#0052cc';
+                }, 1500);
+            };
+
+            key.parentNode.insertBefore(btn, key.nextSibling);
+        }
+    }
 
     const fieldId = "rowForcustomfield_15705";
     const targetListSelector = "#customfieldmodule .property-list";
@@ -101,12 +152,14 @@
             targetList.insertAdjacentHTML('beforeend', fieldHtml);
             //seems like there is big global function catcher in jira. If u create it without a fuction field is not working
             //but if u add an empty one field look like alive for the catcher
-            document.getElementById(fieldId).onclick = function() {}
+            document.getElementById(fieldId).onclick = function () {
+            }
         }
     }
 
     const observer = new MutationObserver((mutations) => {
         addCopyButton();
+        addCopyLinkButton();
         checkAndInsertField();
     });
 
