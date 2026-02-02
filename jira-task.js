@@ -10,8 +10,11 @@
 (function () {
     'use strict';
 
+
     const BUTTON_ID = 'tm-jira-copy-btn',
           BUTTON_LINK_ID = 'tm-jira-copy-link-btn';
+
+    let IS_OPEN = false;
 
     function addCopyButton() {
 
@@ -69,7 +72,7 @@
         if (document.getElementById(BUTTON_LINK_ID)) return;
 
         const key = document.querySelector('#key-val'),
-              link = window.location.href;
+            link = window.location.href;
 
         if (key.innerText) {
 
@@ -157,10 +160,53 @@
         }
     }
 
+    function expandComment() {
+
+        if (IS_OPEN) {
+            return;
+        }
+
+        let elements = document.querySelectorAll('[id^="comment-"].comment-item');
+        let elementsComms = document.querySelectorAll('.comment-item__action-body--actions');
+        let key = document.querySelector('#key-val');
+
+        if (!key
+            || elements.length === 0
+            || elementsComms.length === 0
+            || elementsComms.length !== elements.length) {
+            return;
+        }
+
+        let issueKey = key.innerHTML,
+            issueId = key.rel,
+            commentIds = Array.from(elements).map(s => s.id.substring(8));
+
+        for (let i = 0; i < commentIds.length; i++){
+
+            const ids = commentIds[i];
+
+            let editId = 'edit_comment_${ids}';
+            let deleteId = 'delete_comment_${ids}';
+
+            const fileHtml =
+                `<div className="action-links action-comment-actions">
+                    <jira-comment-pins data-commentid="${ids}" data-issueid="${issueId}" data-pinned="false" data-issuekey="${issueKey}" resolved="">
+                        <button data-is-pinned="false" className="pinbutton css-yjb2hd" tabIndex="0" type="button"><span
+                            className="css-1gd7hga">Закрепить</span></button>
+                    </jira-comment-pins>
+                </div>
+                `
+            elementsComms[i].insertAdjacentHTML('beforebegin', fileHtml);
+        }
+
+        IS_OPEN = true
+
+    }
     const observer = new MutationObserver((mutations) => {
         addCopyButton();
         addCopyLinkButton();
         checkAndInsertField();
+        expandComment();
     });
 
     // Start observing the body for changes
