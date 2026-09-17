@@ -7,7 +7,6 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mozilla.org
 // @grant        GM_setClipboard
 // ==/UserScript==
-
 (function() {
     'use strict';
 
@@ -43,7 +42,6 @@
 
             // Click Event
             btn.onclick = (e) => {
-            console.log('asd')
 
                 e.preventDefault();
                 e.stopPropagation();
@@ -67,7 +65,7 @@
 
 
             key.parentNode.insertBefore(btn, key.nextSibling);
-    }}
+        }}
 
     function addCopyLinkButton() {
 
